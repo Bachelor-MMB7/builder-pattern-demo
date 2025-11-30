@@ -1,122 +1,504 @@
 import 'package:flutter/material.dart';
+import 'builder_pattern/builder_pattern.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const BuilderPatternDemoApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class BuilderPatternDemoApp extends StatelessWidget {
+  const BuilderPatternDemoApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Builder Pattern Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.orange,
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const BurgerBuilderPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class BurgerBuilderPage extends StatefulWidget {
+  const BurgerBuilderPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<BurgerBuilderPage> createState() => _BurgerBuilderPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
+  // Die verschiedenen Builder
+  final List<BurgerBuilder> _builders = [
+    ClassicBurgerBuilder(),
+    VeggieBurgerBuilder(),
+  ];
 
-  void _incrementCounter() {
+  // Der Director
+  final BurgerDirector _director = BurgerDirector();
+
+  // Aktuell ausgewählter Builder Index
+  int _selectedBuilderIndex = 0;
+
+  // Aktueller Builder
+  BurgerBuilder get _currentBuilder => _builders[_selectedBuilderIndex];
+
+  // Toppings State
+  bool _cheese = false;
+  bool _pickles = false;
+  bool _tomato = false;
+  bool _lettuce = false;
+  String _sauce = 'Ketchup';
+
+  // Liste der erstellten Burger
+  final List<Burger> _createdBurgers = [];
+
+  // Verfügbare Saucen
+  final List<String> _sauces = [
+    'Ketchup',
+    'Mayo',
+    'Senf',
+    'BBQ',
+    'Special Sauce',
+    'Hummus',
+  ];
+
+  void _resetToppings() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _cheese = false;
+      _pickles = false;
+      _tomato = false;
+      _lettuce = false;
+      _sauce = 'Ketchup';
     });
+  }
+
+  Burger _buildBurgerManually() {
+    // Manueller Aufbau ohne Director
+    final builder = _selectedBuilderIndex == 0
+        ? ClassicBurgerBuilder()
+        : VeggieBurgerBuilder();
+
+    builder.reset();
+    if (_cheese) builder.setCheese();
+    if (_pickles) builder.setPickles();
+    if (_tomato) builder.setTomato();
+    if (_lettuce) builder.setLettuce();
+    builder.setSauce(_sauce);
+
+    return builder.build();
+  }
+
+  void _addBurger(Burger burger) {
+    setState(() {
+      _createdBurgers.add(burger);
+    });
+  }
+
+  void _useDirectorRecipe(String recipeName) {
+    final builder = _selectedBuilderIndex == 0
+        ? ClassicBurgerBuilder()
+        : VeggieBurgerBuilder();
+
+    Burger burger;
+    switch (recipeName) {
+      case 'fullyLoaded':
+        burger = _director.makeFullyLoaded(builder);
+        break;
+      case 'minimal':
+        burger = _director.makeMinimal(builder);
+        break;
+      case 'classic':
+        burger = _director.makeClassicCombo(builder);
+        break;
+      case 'fresh':
+        burger = _director.makeFreshBurger(builder);
+        break;
+      default:
+        return;
+    }
+
+    _addBurger(burger);
+    _showSnackBar('Director hat "$recipeName" Burger erstellt!');
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
+        title: const Text('Builder Pattern Demo'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Builder Auswahl
+            _buildBuilderSelector(),
+            const SizedBox(height: 24),
+
+            // Manueller Builder Bereich
+            _buildManualBuilderSection(),
+            const SizedBox(height: 24),
+
+            // Director Bereich
+            _buildDirectorSection(),
+            const SizedBox(height: 24),
+
+            // Erstellte Burger
+            _buildCreatedBurgersSection(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBuilderSelector() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              '1. Wähle einen Concrete Builder',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            SegmentedButton<int>(
+              segments: _builders.asMap().entries.map((entry) {
+                final builder = entry.value;
+                return ButtonSegment(
+                  value: entry.key,
+                  label: Text(builder.builderName),
+                  icon: Icon(
+                    entry.key == 0 ? Icons.restaurant : Icons.eco,
+                  ),
+                );
+              }).toList(),
+              selected: {_selectedBuilderIndex},
+              onSelectionChanged: (selection) {
+                setState(() {
+                  _selectedBuilderIndex = selection.first;
+                  _resetToppings();
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Basis-Zutaten (vom Builder vordefiniert):',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text('Brötchen: ${_currentBuilder.bunType}'),
+                  Text('Patty: ${_currentBuilder.pattyType}'),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _buildManualBuilderSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '2. Manuell bauen (ohne Director)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Hier rufst du die Builder-Methoden selbst auf:',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+
+            // Toppings
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                FilterChip(
+                  label: const Text('Käse'),
+                  selected: _cheese,
+                  onSelected: (value) => setState(() => _cheese = value),
+                ),
+                FilterChip(
+                  label: const Text('Gurken'),
+                  selected: _pickles,
+                  onSelected: (value) => setState(() => _pickles = value),
+                ),
+                FilterChip(
+                  label: const Text('Tomaten'),
+                  selected: _tomato,
+                  onSelected: (value) => setState(() => _tomato = value),
+                ),
+                FilterChip(
+                  label: const Text('Salat'),
+                  selected: _lettuce,
+                  onSelected: (value) => setState(() => _lettuce = value),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // Sauce Dropdown
+            DropdownButtonFormField<String>(
+              value: _sauce,
+              decoration: const InputDecoration(
+                labelText: 'Sauce',
+                border: OutlineInputBorder(),
+              ),
+              items: _sauces.map((sauce) {
+                return DropdownMenuItem(value: sauce, child: Text(sauce));
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _sauce = value);
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Code Vorschau
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                _buildCodePreview(),
+                style: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 12,
+                  color: Colors.greenAccent,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      final burger = _buildBurgerManually();
+                      _addBurger(burger);
+                      _showSnackBar('Burger manuell erstellt!');
+                    },
+                    icon: const Icon(Icons.build),
+                    label: const Text('builder.build()'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                OutlinedButton(
+                  onPressed: _resetToppings,
+                  child: const Text('Reset'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _buildCodePreview() {
+    final builderName = _selectedBuilderIndex == 0
+        ? 'ClassicBurgerBuilder'
+        : 'VeggieBurgerBuilder';
+
+    final methods = <String>[];
+    if (_cheese) methods.add('.setCheese()');
+    if (_pickles) methods.add('.setPickles()');
+    if (_tomato) methods.add('.setTomato()');
+    if (_lettuce) methods.add('.setLettuce()');
+    methods.add('.setSauce("$_sauce")');
+
+    return 'var builder = $builderName();\n'
+        'var burger = builder\n'
+        '    ${methods.join('\n    ')}\n'
+        '    .build();';
+  }
+
+  Widget _buildDirectorSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '3. Mit Director (vordefinierte Rezepte)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Der Director kennt die Rezepte und steuert den Builder:',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _buildDirectorButton(
+                  'Fully Loaded',
+                  'fullyLoaded',
+                  Icons.stars,
+                ),
+                _buildDirectorButton(
+                  'Minimal',
+                  'minimal',
+                  Icons.minimize,
+                ),
+                _buildDirectorButton(
+                  'Classic Combo',
+                  'classic',
+                  Icons.thumb_up,
+                ),
+                _buildDirectorButton(
+                  'Fresh',
+                  'fresh',
+                  Icons.spa,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'var director = BurgerDirector();\n'
+                'var burger = director.makeFullyLoaded(\n'
+                '    ClassicBurgerBuilder()\n'
+                ');',
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 12,
+                  color: Colors.cyanAccent,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDirectorButton(String label, String recipe, IconData icon) {
+    return ElevatedButton.icon(
+      onPressed: () => _useDirectorRecipe(recipe),
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+    );
+  }
+
+  Widget _buildCreatedBurgersSection() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Erstellte Burger (${_createdBurgers.length})',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                if (_createdBurgers.isNotEmpty)
+                  TextButton(
+                    onPressed: () {
+                      setState(() => _createdBurgers.clear());
+                    },
+                    child: const Text('Alle löschen'),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (_createdBurgers.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(24),
+                alignment: Alignment.center,
+                child: Text(
+                  'Noch keine Burger erstellt.\n'
+                  'Nutze den Builder oder Director!',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _createdBurgers.length,
+                separatorBuilder: (_, __) => const Divider(),
+                itemBuilder: (context, index) {
+                  final burger = _createdBurgers[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
+                      child: Text('${index + 1}'),
+                    ),
+                    title: Text(
+                      '${burger.bun}-${burger.patty} Burger',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(burger.getDescription()),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: () {
+                        setState(() {
+                          _createdBurgers.removeAt(index);
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

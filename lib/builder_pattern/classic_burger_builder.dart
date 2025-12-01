@@ -1,53 +1,40 @@
 import 'builder.dart';
 import 'burger.dart';
 
-/// KONKRETER BUILDER für klassische Burger
-///
-/// Implementiert das Builder Interface für einen klassischen Rindfleisch-Burger.
-/// Die Basis-Zutaten (Brötchen, Patty) sind vordefiniert,
-/// die optionalen Toppings können flexibel hinzugefügt werden.
 class ClassicBurgerBuilder implements BurgerBuilder {
-  // Feste Basis-Zutaten für den klassischen Burger
   final String _bun = 'Brioche';
   final String _patty = 'Rind';
 
-  // Optionale Toppings - standardmäßig alle deaktiviert
   bool _cheese = false;
-  bool _pickles = false;
-  bool _tomato = false;
-  bool _lettuce = false;
+  bool _onions = false;
   String _sauce = 'Ketchup';
+
+  // Why no constructor? Because all attributes have default values.
+  // If values varied per instance (e.g., different restaurant branches
+  // with different suppliers: Munich uses 'Laugenbrot', Berlin uses 'Schrippe'),
+  // we would need a constructor to pass these values in. Or height and weight
+  // for a PersonBuilder.
 
   @override
   String get builderName => 'Classic Burger Builder';
 
+  // Getter
   @override
   String get bunType => _bun;
 
   @override
   String get pattyType => _patty;
 
+  // Setter
   @override
   ClassicBurgerBuilder setCheese() {
     _cheese = true;
-    return this; // Fluent Interface - ermöglicht Method Chaining
-  }
-
-  @override
-  ClassicBurgerBuilder setPickles() {
-    _pickles = true;
     return this;
   }
 
   @override
-  ClassicBurgerBuilder setTomato() {
-    _tomato = true;
-    return this;
-  }
-
-  @override
-  ClassicBurgerBuilder setLettuce() {
-    _lettuce = true;
+  ClassicBurgerBuilder setOnions() {
+    _onions = true;
     return this;
   }
 
@@ -60,23 +47,13 @@ class ClassicBurgerBuilder implements BurgerBuilder {
   @override
   ClassicBurgerBuilder reset() {
     _cheese = false;
-    _pickles = false;
-    _tomato = false;
-    _lettuce = false;
+    _onions = false;
     _sauce = 'Ketchup';
     return this;
   }
 
   @override
   Burger build() {
-    return Burger(
-      bun: _bun,
-      patty: _patty,
-      cheese: _cheese,
-      pickles: _pickles,
-      tomato: _tomato,
-      lettuce: _lettuce,
-      sauce: _sauce,
-    );
+    return Burger(_bun, _patty, _cheese, _onions, _sauce);
   }
 }

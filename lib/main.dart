@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'builder_pattern/builder_pattern.dart';
+import 'builder_pattern/builder_pattern_export.dart';
 
 void main() {
   runApp(const BuilderPatternDemoApp());
 }
 
+// Stateless because no reloading of the page is needed, no changes of UI or button text
+// Button-Text ändert sich von "Bestellen" → "Bestellt ✓"
 class BuilderPatternDemoApp extends StatelessWidget {
   const BuilderPatternDemoApp({super.key});
 
@@ -33,62 +35,41 @@ class BurgerBuilderPage extends StatefulWidget {
 }
 
 class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
-  // Die verschiedenen Builder
   final List<BurgerBuilder> _builders = [
     ClassicBurgerBuilder(),
     VeggieBurgerBuilder(),
   ];
 
-  // Der Director
   final BurgerDirector _director = BurgerDirector();
 
-  // Aktuell ausgewählter Builder Index
   int _selectedBuilderIndex = 0;
 
-  // Aktueller Builder
   BurgerBuilder get _currentBuilder => _builders[_selectedBuilderIndex];
 
-  // Toppings State
   bool _cheese = false;
-  bool _pickles = false;
-  bool _tomato = false;
-  bool _lettuce = false;
+  bool _onions = false;
   String _sauce = 'Ketchup';
 
-  // Liste der erstellten Burger
   final List<Burger> _createdBurgers = [];
 
-  // Verfügbare Saucen
-  final List<String> _sauces = [
-    'Ketchup',
-    'Mayo',
-    'Senf',
-    'BBQ',
-    'Special Sauce',
-    'Hummus',
-  ];
+  final List<String> _sauces = ['Ketchup', 'Mayo', 'BBQ'];
 
   void _resetToppings() {
     setState(() {
       _cheese = false;
-      _pickles = false;
-      _tomato = false;
-      _lettuce = false;
+      _onions = false;
       _sauce = 'Ketchup';
     });
   }
 
   Burger _buildBurgerManually() {
-    // Manueller Aufbau ohne Director
     final builder = _selectedBuilderIndex == 0
         ? ClassicBurgerBuilder()
         : VeggieBurgerBuilder();
 
     builder.reset();
     if (_cheese) builder.setCheese();
-    if (_pickles) builder.setPickles();
-    if (_tomato) builder.setTomato();
-    if (_lettuce) builder.setLettuce();
+    if (_onions) builder.setOnions();
     builder.setSauce(_sauce);
 
     return builder.build();
@@ -115,9 +96,6 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
         break;
       case 'classic':
         burger = _director.makeClassicCombo(builder);
-        break;
-      case 'fresh':
-        burger = _director.makeFreshBurger(builder);
         break;
       default:
         return;
@@ -149,19 +127,12 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Builder Auswahl
             _buildBuilderSelector(),
             const SizedBox(height: 24),
-
-            // Manueller Builder Bereich
             _buildManualBuilderSection(),
             const SizedBox(height: 24),
-
-            // Director Bereich
             _buildDirectorSection(),
             const SizedBox(height: 24),
-
-            // Erstellte Burger
             _buildCreatedBurgersSection(),
           ],
         ),
@@ -243,8 +214,6 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
-
-            // Toppings
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -255,25 +224,13 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
                   onSelected: (value) => setState(() => _cheese = value),
                 ),
                 FilterChip(
-                  label: const Text('Gurken'),
-                  selected: _pickles,
-                  onSelected: (value) => setState(() => _pickles = value),
-                ),
-                FilterChip(
-                  label: const Text('Tomaten'),
-                  selected: _tomato,
-                  onSelected: (value) => setState(() => _tomato = value),
-                ),
-                FilterChip(
-                  label: const Text('Salat'),
-                  selected: _lettuce,
-                  onSelected: (value) => setState(() => _lettuce = value),
+                  label: const Text('Zwiebeln'),
+                  selected: _onions,
+                  onSelected: (value) => setState(() => _onions = value),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-
-            // Sauce Dropdown
             DropdownButtonFormField<String>(
               value: _sauce,
               decoration: const InputDecoration(
@@ -290,8 +247,6 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
               },
             ),
             const SizedBox(height: 16),
-
-            // Code Vorschau
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -308,7 +263,6 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
               ),
             ),
             const SizedBox(height: 12),
-
             Row(
               children: [
                 Expanded(
@@ -342,9 +296,7 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
 
     final methods = <String>[];
     if (_cheese) methods.add('.setCheese()');
-    if (_pickles) methods.add('.setPickles()');
-    if (_tomato) methods.add('.setTomato()');
-    if (_lettuce) methods.add('.setLettuce()');
+    if (_onions) methods.add('.setOnions()');
     methods.add('.setSauce("$_sauce")');
 
     return 'var builder = $builderName();\n'
@@ -374,26 +326,9 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _buildDirectorButton(
-                  'Fully Loaded',
-                  'fullyLoaded',
-                  Icons.stars,
-                ),
-                _buildDirectorButton(
-                  'Minimal',
-                  'minimal',
-                  Icons.minimize,
-                ),
-                _buildDirectorButton(
-                  'Classic Combo',
-                  'classic',
-                  Icons.thumb_up,
-                ),
-                _buildDirectorButton(
-                  'Fresh',
-                  'fresh',
-                  Icons.spa,
-                ),
+                _buildDirectorButton('Fully Loaded', 'fullyLoaded', Icons.stars),
+                _buildDirectorButton('Minimal', 'minimal', Icons.minimize),
+                _buildDirectorButton('Classic Combo', 'classic', Icons.thumb_up),
               ],
             ),
             const SizedBox(height: 12),

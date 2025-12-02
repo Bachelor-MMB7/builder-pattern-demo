@@ -7,7 +7,6 @@ abstract interface class BurgerBuilder {
   BurgerBuilder setOnions();
   BurgerBuilder setSauce(String sauce);
   Burger build();
-  BurgerBuilder reset();
 
   // Getter
   String get builderName;

@@ -37,14 +37,6 @@ class VeggieBurgerBuilder implements BurgerBuilder {
   }
 
   @override
-  VeggieBurgerBuilder reset() {
-    _cheese = false;
-    _onions = false;
-    _sauce = 'Mayo';
-    return this;
-  }
-
-  @override
   Burger build() {
     return Burger(_bun, _patty, _cheese, _onions, _sauce);
   }

@@ -49,7 +49,6 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
   // Manuell Burger bauen (ohne Director)
   Burger _buildBurgerManually() {
     final builder = _isVeggie ? VeggieBurgerBuilder() : ClassicBurgerBuilder();
-    builder.reset();
     if (_cheese) builder.setCheese();
     if (_onions) builder.setOnions();
     builder.setSauce(_sauce);
@@ -89,6 +88,10 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
     );
   }
 
+  // context = "Hier bin ich im Widget-Baum" (meine aktuelle Position)
+  // Flutter übergibt context automatisch an build()
+  // Mit .of(context) sucht Flutter von dieser Position nach oben im Baum
+  // z.B. Theme.of(context) sucht das nächste Theme oberhalb
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,6 +121,8 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
                         ChoiceChip(
                           label: const Text('Classic Burger'),
                           selected: !_isVeggie,
+                          // Wenn _isVeggie = false (Classic aktiv):
+                          // !false = true → Classic ist BLAU ✓
                           onSelected: (_) => setState(() {
                             _isVeggie = false;
                             _cheese = false;

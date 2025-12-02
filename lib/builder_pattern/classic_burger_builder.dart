@@ -45,14 +45,6 @@ class ClassicBurgerBuilder implements BurgerBuilder {
   }
 
   @override
-  ClassicBurgerBuilder reset() {
-    _cheese = false;
-    _onions = false;
-    _sauce = 'Ketchup';
-    return this;
-  }
-
-  @override
   Burger build() {
     return Burger(_bun, _patty, _cheese, _onions, _sauce);
   }

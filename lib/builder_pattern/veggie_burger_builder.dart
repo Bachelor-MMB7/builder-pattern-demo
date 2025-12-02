@@ -6,7 +6,7 @@ class VeggieBurgerBuilder implements BurgerBuilder {
   final String _patty = 'Gemüse';
 
   bool _cheese = false;
-  bool _onions = false;
+  bool _pickles = false;
   String _sauce = 'Mayo';
 
   @override
@@ -25,8 +25,8 @@ class VeggieBurgerBuilder implements BurgerBuilder {
   }
 
   @override
-  VeggieBurgerBuilder setOnions() {
-    _onions = true;
+  VeggieBurgerBuilder setPickles() {
+    _pickles = true;
     return this;
   }
 
@@ -38,6 +38,6 @@ class VeggieBurgerBuilder implements BurgerBuilder {
 
   @override
   Burger build() {
-    return Burger(_bun, _patty, _cheese, _onions, _sauce);
+    return Burger(_bun, _patty, _cheese, _pickles, _sauce);
   }
 }

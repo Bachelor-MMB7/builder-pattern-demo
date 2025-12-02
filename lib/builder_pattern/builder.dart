@@ -4,7 +4,7 @@ import 'burger.dart';
 abstract interface class BurgerBuilder {
   // Setter
   BurgerBuilder setCheese();
-  BurgerBuilder setOnions();
+  BurgerBuilder setPickles();
   BurgerBuilder setSauce(String sauce);
   Burger build();
 

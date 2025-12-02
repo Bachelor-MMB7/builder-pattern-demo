@@ -6,7 +6,7 @@ class ClassicBurgerBuilder implements BurgerBuilder {
   final String _patty = 'Rind';
 
   bool _cheese = false;
-  bool _onions = false;
+  bool _pickles = false;
   String _sauce = 'Ketchup';
 
   // Why no constructor? Because all attributes have default values.
@@ -33,8 +33,8 @@ class ClassicBurgerBuilder implements BurgerBuilder {
   }
 
   @override
-  ClassicBurgerBuilder setOnions() {
-    _onions = true;
+  ClassicBurgerBuilder setPickles() {
+    _pickles = true;
     return this;
   }
 
@@ -46,6 +46,6 @@ class ClassicBurgerBuilder implements BurgerBuilder {
 
   @override
   Burger build() {
-    return Burger(_bun, _patty, _cheese, _onions, _sauce);
+    return Burger(_bun, _patty, _cheese, _pickles, _sauce);
   }
 }

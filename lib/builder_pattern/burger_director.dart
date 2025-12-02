@@ -5,14 +5,15 @@ class BurgerDirector {
   Burger makeFullyLoaded(BurgerBuilder builder) {
     return builder
         .setCheese()
-        .setOnions()
+        .setPickles()
         .setSauce('BBQ')
         .build();
   }
 
-  Burger makeMinimal(BurgerBuilder builder) {
+  Burger makeCheeseLover(BurgerBuilder builder) {
     return builder
         .setCheese()
+        .setSauce('Mayonnaise')
         .build();
   }
 }

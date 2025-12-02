@@ -75,9 +75,13 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
         title: const Text('Builder Pattern Demo'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // === 1. Builder Auswahl ===
@@ -242,7 +246,9 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
                 ),
               ),
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );

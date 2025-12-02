@@ -12,7 +12,7 @@ class BuilderPatternDemoApp extends StatelessWidget {
   // fragen
   const BuilderPatternDemoApp({super.key});
 
-  // Erstellung UI-Objekt
+  // Creating UI-Objekt
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -39,7 +39,7 @@ class BurgerBuilderPage extends StatefulWidget {
 }
 
 class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
-  // State-Variablen
+  // State der State-Variablen bleiben beim rebuild erhalten --> States überleben / sind geschützt
   final List<Burger> _createdBurgers = [];
   final BurgerDirector _director = BurgerDirector();
   bool _isVeggie = false;  // Classic oder Veggie Builder
@@ -48,6 +48,7 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
   // UI needs to be updated, therefore setState
   void _addBurger(Burger burger) {
     setState(() {
+      // state wird geändert durch hinzufügen des Burgers und build() wird neu aufgerufen damit UI aktualisiert wird
       _createdBurgers.add(burger);
     });
   }
@@ -118,7 +119,7 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
 
             const SizedBox(height: 16),
 
-            // === 2. Mit Director (vordefinierte Rezepte) ===
+            // === 2. Director (recipes) ===
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -135,7 +136,7 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(height: 12),
-                    // Code Preview - ändert sich dynamisch je nach geklicktem Button
+                    // Code Preview
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
@@ -147,17 +148,17 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
                         text: TextSpan(
                           style: DraculaStyles.normal,
                           children: [
-                            // Zeile 1: var director = BurgerDirector();
+                            // line 1: var director = BurgerDirector();
                             TextSpan(text: 'var', style: DraculaStyles.keyword),
                             const TextSpan(text: ' director = '),
                             TextSpan(text: 'BurgerDirector', style: DraculaStyles.className),
                             const TextSpan(text: '();\n'),
-                            // Zeile 2: var burger = director.makeXXX(
+                            // line 2: var burger = director.makeXXX(
                             TextSpan(text: 'var', style: DraculaStyles.keyword),
                             const TextSpan(text: ' burger = director.'),
                             TextSpan(text: _lastRecipe, style: DraculaStyles.method),
                             const TextSpan(text: '(\n'),
-                            // Zeile 3: Builder
+                            // line 3: Builder
                             const TextSpan(text: '    '),
                             TextSpan(
                               text: _isVeggie ? 'VeggieBurgerBuilder' : 'ClassicBurgerBuilder',

@@ -13,7 +13,6 @@ class BurgerDirector {
   Burger makeCheeseLover(BurgerBuilder builder) {
     return builder
         .setCheese()
-        .setSauce('Mayonnaise')
         .build();
   }
 }

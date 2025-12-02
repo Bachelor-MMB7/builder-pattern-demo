@@ -10,15 +10,6 @@ class VeggieBurgerBuilder implements BurgerBuilder {
   String _sauce = 'Mayo';
 
   @override
-  String get builderName => 'Veggie Burger Builder';
-
-  @override
-  String get bunType => _bun;
-
-  @override
-  String get pattyType => _patty;
-
-  @override
   VeggieBurgerBuilder setCheese() {
     _cheese = true;
     return this;

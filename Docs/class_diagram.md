@@ -5,36 +5,33 @@ classDiagram
     class BurgerBuilder {
         <<interface>>
         +setCheese() BurgerBuilder
-        +setOnions() BurgerBuilder
+        +setPickles() BurgerBuilder
         +setSauce(String) BurgerBuilder
         +build() Burger
-        +reset() BurgerBuilder
     }
 
     class ClassicBurgerBuilder {
         -String _bun
         -String _patty
         -bool _cheese
-        -bool _onions
+        -bool _pickles
         -String _sauce
         +setCheese() ClassicBurgerBuilder
-        +setOnions() ClassicBurgerBuilder
+        +setPickles() ClassicBurgerBuilder
         +setSauce(String) ClassicBurgerBuilder
         +build() Burger
-        +reset() ClassicBurgerBuilder
     }
 
     class VeggieBurgerBuilder {
         -String _bun
         -String _patty
         -bool _cheese
-        -bool _onions
+        -bool _pickles
         -String _sauce
         +setCheese() VeggieBurgerBuilder
-        +setOnions() VeggieBurgerBuilder
+        +setPickles() VeggieBurgerBuilder
         +setSauce(String) VeggieBurgerBuilder
         +build() Burger
-        +reset() VeggieBurgerBuilder
     }
 
     class Burger {
@@ -42,7 +39,7 @@ classDiagram
         +String bun
         +String patty
         +bool cheese
-        +bool onions
+        +bool pickles
         +String sauce
         +getDescription() String
     }
@@ -50,8 +47,7 @@ classDiagram
     class BurgerDirector {
         <<Director>>
         +makeFullyLoaded(BurgerBuilder) Burger
-        +makeMinimal(BurgerBuilder) Burger
-        +makeClassicCombo(BurgerBuilder) Burger
+        +makeCheeseLover(BurgerBuilder) Burger
     }
 
     BurgerBuilder <|.. ClassicBurgerBuilder : implements

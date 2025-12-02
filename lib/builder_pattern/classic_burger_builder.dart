@@ -16,17 +16,6 @@ class ClassicBurgerBuilder implements BurgerBuilder {
   // for a PersonBuilder.
 
   @override
-  String get builderName => 'Classic Burger Builder';
-
-  // Getter
-  @override
-  String get bunType => _bun;
-
-  @override
-  String get pattyType => _patty;
-
-  // Setter
-  @override
   ClassicBurgerBuilder setCheese() {
     _cheese = true;
     return this;

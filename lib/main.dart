@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'builder_pattern/builder_pattern_export.dart';
+import 'theme/dracula_colors.dart';
 
 void main() {
   runApp(const BuilderPatternDemoApp());
@@ -135,18 +136,33 @@ class _BurgerBuilderPageState extends State<BurgerBuilderPage> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.grey[900],
+                        color: DraculaColors.background,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
-                        'var director = BurgerDirector();\n'
-                        'var burger = director.$_lastRecipe(\n'
-                        '    ${_isVeggie ? 'VeggieBurgerBuilder' : 'ClassicBurgerBuilder'}()\n'
-                        ');',
-                        style: const TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          color: Colors.cyanAccent,
+                      child: RichText(
+                        text: TextSpan(
+                          style: DraculaStyles.normal,
+                          children: [
+                            // Zeile 1: var director = BurgerDirector();
+                            TextSpan(text: 'var', style: DraculaStyles.keyword),
+                            const TextSpan(text: ' director = '),
+                            TextSpan(text: 'BurgerDirector', style: DraculaStyles.className),
+                            const TextSpan(text: '();\n'),
+                            // Zeile 2: var burger = director.makeXXX(
+                            TextSpan(text: 'var', style: DraculaStyles.keyword),
+                            const TextSpan(text: ' burger = director.'),
+                            TextSpan(text: _lastRecipe, style: DraculaStyles.method),
+                            const TextSpan(text: '(\n'),
+                            // Zeile 3: Builder
+                            const TextSpan(text: '    '),
+                            TextSpan(
+                              text: _isVeggie ? 'VeggieBurgerBuilder' : 'ClassicBurgerBuilder',
+                              style: DraculaStyles.className,
+                            ),
+                            const TextSpan(text: '()\n'),
+                            // Zeile 4: );
+                            const TextSpan(text: ');'),
+                          ],
                         ),
                       ),
                     ),

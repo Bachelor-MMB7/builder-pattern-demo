@@ -18,7 +18,4 @@ class Burger {
 
     return '$bun-Brötchen, $patty-Patty, $toppingsText, $sauce-Sauce';
   }
-
-  @override
-  String toString() => 'Burger: ${getDescription()}';
 }
